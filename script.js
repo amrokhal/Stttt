@@ -11,6 +11,10 @@ const resultsBox = document.getElementById('resultsBox');
 const barsContainer = document.getElementById('barsContainer');
 const resetBtn = document.getElementById('resetBtn');
 
+// إعدادات الـ API (مثال باستخدام نموذج تصنيف من Hugging Face)
+// ملاحظة: للاستخدام المكثف يفضل الحصول على Free API Token من موقعهم وضعه هنا لتجنب قيود الطلبات
+const HF_API_URL = "https://api-inference.huggingface.co/models/Dima74/ethnicity_classification_v2"; 
+
 // 1. تفعيل ميزة السحب والإفلات (Drag & Drop)
 uploadArea.addEventListener('click', () => fileInput.click());
 
@@ -45,70 +49,80 @@ function handleImageUpload() {
         previewImage.src = e.target.result;
         uploadContent.style.display = 'none';
         previewContainer.style.display = 'block';
-        startSmartAnalysis(); // بدء التحليل فور رفع الصورة
+        analyzeImageWithAI(file); // استدعاء الدالة الحقيقية وإرسال ملف الصورة
     };
 
     reader.readAsDataURL(file);
 }
 
-// 3. دالة محاكاة التحليل باستخدام الوعود غير المتزامنة (Async/Await)
-async function startSmartAnalysis() {
-    // إخفاء النتائج السابقة إن وجدت
+// 3. الدالة الحقيقية للاتصال بالذكاء الاصطناعي (Async/Await Fetch)
+async function analyzeImageWithAI(fileBlob) {
+    // إخفاء النتائج السابقة وتشغيل أنيميشن الفحص
     resultsBox.style.display = 'none';
     barsContainer.innerHTML = '';
-    
-    // تشغيل الرادار ومؤشر التحميل
-    uploadArea.style.pointerEvents = 'none'; // منع ضغط المستخدم أثناء التحليل
+    uploadArea.style.pointerEvents = 'none'; 
     cyberScanner.style.display = 'block';
     loadingSpinner.style.display = 'block';
 
-    // محاكاة مراحل المعالجة بخطوات زمنية متعاقبة
     statusText.style.color = 'var(--text-main)';
-    statusText.innerText = "جاري تهيئة الشبكة العصبية...";
-    await delay(1200);
+    statusText.innerText = "جاري قراءة البيانات الثنائية للصورة...";
 
-    statusText.innerText = "تحديد المعالم الهيكلية للوجه...";
-    await delay(1500);
+    try {
+        statusText.innerText = "جاري إرسال الصورة إلى خادم الذكاء الاصطناعي...";
+        
+        // إرسال طلب الـ API الحقيقي
+        const response = await fetch(HF_API_URL, {
+            method: "POST",
+            body: fileBlob,
+        });
 
-    statusText.innerText = "مقارنة البيانات مع السجلات الجينية العالمية...";
-    await delay(1800);
+        if (!response.ok) {
+            throw new Error("فشل الخادم في معالجة الصورة أو أن النموذج جاري تحميله الآن.");
+        }
 
-    statusText.innerText = "توليد الخريطة العرقية النهائية...";
-    await delay(1000);
+        statusText.innerText = "جاري تحليل الملامح واستخراج النسب المئوية...";
+        const data = await response.json();
 
-    // إنهاء التحليل وعرض النتائج
-    cyberScanner.style.display = 'none';
-    loadingSpinner.style.display = 'none';
-    statusText.style.color = '#10b981'; // لون أخضر للنجاح
-    statusText.innerText = "اكتمل التحليل بنجاح!";
-    
-    generateAndDisplayResults();
+        // إيقاف أنيميشن التحميل
+        cyberScanner.style.display = 'none';
+        loadingSpinner.style.display = 'none';
+        statusText.style.color = '#10b981'; 
+        statusText.innerText = "اكتمل التحليل الحقيقي بنجاح!";
+
+        displayRealResults(data);
+
+    } catch (error) {
+        // التعامل مع الأخطاء في حال انقطاع الإنترنت أو مشاكل السيرفر
+        cyberScanner.style.display = 'none';
+        loadingSpinner.style.display = 'none';
+        statusText.style.color = '#ef4444';
+        statusText.innerText = `عذراً، حدث خطأ: ${error.message}`;
+        uploadArea.style.pointerEvents = 'auto';
+    }
 }
 
-// دالة مساعدة لتأخير التنفيذ (تستخدم مع await)
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+// 4. عرض النتائج الحقيقية القادمة من الـ API وتفعيل الأنيميشن
+function displayRealResults(aiData) {
+    // النماذج عادة تعيد مصفوفة تحتوي على الـ label (الاسم العرقي) والـ score (النسبة من 0 إلى 1)
+    // نقوم بترتيبها من الأعلى نسبة إلى الأقل
+    const sortedResults = aiData.sort((a, b) => b.score - a.score);
 
-// 4. توليد نتائج ديناميكية ومتحركة
-function generateAndDisplayResults() {
-    // قاعدة بيانات وهمية للنتائج
-    const databases = [
-        [{ name: "شمال أفريقيا", pct: 68 }, { name: "الشرق الأوسط", pct: 22 }, { name: "أوروبا الجنوبية", pct: 10 }],
-        [{ name: "بلاد الشام والرافدين", pct: 55 }, { name: "آسيا الوسطى", pct: 30 }, { name: "أصول أخرى", pct: 15 }],
-        [{ name: "شبه الجزيرة العربية", pct: 70 }, { name: "القرن الأفريقي", pct: 20 }, { name: "شرق آسيا", pct: 10 }]
-    ];
+    sortedResults.forEach((item, index) => {
+        const percentage = Math.round(item.score * 100); // تحويل الكسر إلى نسبة مئوية (مثلاً 0.75 تصبح 75%)
+        
+        // ترجمة أسماء الأعراق الشائعة القادمة من النموذج الإنجليزي إلى العربية (اختياري تحسينياً)
+        let arabicName = item.label;
+        if(item.label.toLowerCase().includes('african')) arabicName = "أصول أفريقية";
+        else if(item.label.toLowerCase().includes('asian')) arabicName = "أصول آسيوية";
+        else if(item.label.toLowerCase().includes('caucasian') || item.label.toLowerCase().includes('white')) arabicName = "أصول قوقازية / أوروبية";
+        else if(item.label.toLowerCase().includes('middle eastern')) arabicName = "أصول من الشرق الأوسط";
 
-    const finalResult = databases[Math.floor(Math.random() * databases.length)];
-
-    finalResult.forEach((item, index) => {
-        // إنشاء عناصر HTML لكل نتيجة عبر الجافا سكريبت
         const barWrapper = document.createElement('div');
         barWrapper.className = 'bar-wrapper';
         
         barWrapper.innerHTML = `
             <div class="bar-info">
-                <span>${item.name}</span>
+                <span>${arabicName}</span>
                 <span id="counter-${index}">0%</span>
             </div>
             <div class="bar-bg">
@@ -117,19 +131,20 @@ function generateAndDisplayResults() {
         `;
         barsContainer.appendChild(barWrapper);
 
-        // تشغيل تأثير تعبئة الشريط بعد إضافته بلحظات
+        // تشغيل العدادات التجميلية بناءً على الأرقام الحقيقية القادمة من السيرفر
         setTimeout(() => {
-            document.getElementById(`fill-${index}`).style.width = `${item.pct}%`;
-            animateValue(`counter-${index}`, 0, item.pct, 1500);
-        }, 100 * index); // تأخير متسلسل لكل شريط
+            document.getElementById(`fill-${index}`).style.width = `${percentage}%`;
+            animateValue(`counter-${index}`, 0, percentage, 1200);
+        }, 100 * index);
     });
 
     resultsBox.style.display = 'block';
 }
 
-// 5. أنيميشن تصاعد الأرقام (عداد النسب المئوية)
+// 5. عداد تصاعد الأرقام الفاخر
 function animateValue(id, start, end, duration) {
     const obj = document.getElementById(id);
+    if (!obj) return;
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
@@ -150,6 +165,5 @@ resetBtn.addEventListener('click', () => {
     resultsBox.style.display = 'none';
     statusText.style.color = 'var(--text-muted)';
     statusText.innerText = "في انتظار الصورة...";
-    uploadArea.style.pointerEvents = 'auto'; // إعادة تفعيل الرفع
+    uploadArea.style.pointerEvents = 'auto';
 });
-
