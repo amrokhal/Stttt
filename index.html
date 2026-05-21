@@ -3,311 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مستكشف الأصول العالمية | Globe Origins</title>
-    <style>
-        /* إعدادات الخلفية والخطوط العامة */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* حاوية الموقع الرئيسية */
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            max-width: 550px;
-            width: 100%;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        h1 {
-            color: #1e3c72;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        p.subtitle {
-            color: #666;
-            font-size: 15px;
-            margin-bottom: 30px;
-        }
-
-        /* منطقة رفع الصورة وعرضها المعاين */
-        .upload-section {
-            border: 3px dashed #2a5298;
-            padding: 30px;
-            border-radius: 15px;
-            background-color: #f8fafd;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .upload-section:hover {
-            background-color: #f0f4f9;
-            border-color: #1e3c72;
-        }
-
-        .upload-icon {
-            font-size: 50px;
-            color: #2a5298;
-            margin-bottom: 10px;
-        }
-
-        #imagePreview {
-            display: none;
-            max-width: 100%;
-            max-height: 250px;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        /* خط الرادار المتحرك (تأثير الفحص) */
-        .scanner-line {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right, transparent, #00ffcc, transparent);
-            box-shadow: 0 0 10px #00ffcc;
-            animation: scan 2s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
-        }
-
-        /* زر التحليل */
-        .btn-analyze {
-            background: linear-gradient(to right, #11998e, #38ef7d);
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 25px;
-            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
-            transition: 0.3s ease;
-            width: 100%;
-        }
-
-        .btn-analyze:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
-        }
-
-        .btn-analyze:disabled {
-            background: #cccccc;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        /* صندوق النتائج */
-        .result-box {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f1f8ff;
-            border-right: 5px solid #2a5298;
-            border-radius: 8px;
-            text-align: right;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-title {
-            font-weight: bold;
-            color: #1e3c72;
-            margin-bottom: 15px;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        /* شريط النسبة المئوية الجمالي */
-        .percentage-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 12px;
-            width: 100%;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(to left, #2a5298, #6dd5ed);
-            border-radius: 10px;
-            width: 0%;
-            transition: width 1s ease-in-out;
-        }
-
-        .origin-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        #statusText {
-            margin-top: 15px;
-            font-weight: bold;
-            color: #1e3c72;
-        }
-    </style>
+    <title>مستكشف الأصول العالمية | Advanced Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- ربط ملف التصميم -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
-    <h1>مستكشف الأصول والروابط الجينية</h1>
-    <p class="subtitle">ارفع صورتك الشخصية بوضوح ودع الخوارزمية التخيلية تكتشف جذور سلالتك!</p>
-    
-    <!-- منطقة الرفع -->
-    <div class="upload-section" onclick="document.getElementById('imageInput').click()">
-        <div id="uploadPrompt">
-            <div class="upload-icon">📷</div>
-            <p style="margin: 0; font-weight: bold; color: #555;">اضغط هنا لاختيار صورة</p>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: #888;">يدعم صيغ JPG, PNG</p>
+    <!-- الخلفية المتحركة -->
+    <div class="bg-animation">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="glass-panel">
+        <header>
+            <h1>الخوارزمية الجينية الذكية</h1>
+            <p>قم بسحب وإفلات صورتك هنا، أو اضغط للاختيار، لتبدأ عملية التحليل المورفولوجي المتقدمة.</p>
+        </header>
+
+        <!-- منطقة الرفع التفاعلية -->
+        <section class="upload-area" id="uploadArea">
+            <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" hidden>
+            <div class="upload-content" id="uploadContent">
+                <div class="icon-pulse">🧬</div>
+                <h3>اسحب الصورة وأفلتها هنا</h3>
+                <span class="file-limits">الحد الأقصى 5MB (JPG, PNG)</span>
+            </div>
+            <div class="preview-container" id="previewContainer">
+                <img id="previewImage" alt="الصورة المرفوعة">
+                <div class="cyber-scanner" id="cyberScanner"></div>
+            </div>
+        </section>
+
+        <!-- شريط الحالة والعمليات -->
+        <div class="status-box" id="statusBox">
+            <div class="spinner" id="loadingSpinner"></div>
+            <span id="statusText">في انتظار الصورة...</span>
         </div>
-        <img id="imagePreview" alt="معاينة الصورة المرفوعة">
-        <div class="scanner-line" id="scannerLine"></div>
-    </div>
 
-    <!-- حقل اختيار الملف المخفي -->
-    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-    
-    <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()">ابدأ فحص الملامح الجينية</button>
+        <!-- صندوق النتائج -->
+        <section class="results-box" id="resultsBox">
+            <h3 class="results-header">🌍 التقرير الجيني التقديري</h3>
+            <div id="barsContainer" class="bars-container"></div>
+            
+            <button class="btn-reset" id="resetBtn">🔄 تحليل صورة أخرى</button>
+        </section>
+    </main>
 
-    <div id="statusText"></div>
-
-    <!-- صندوق النتائج الذكي -->
-    <div class="result-box" id="resultBox">
-        <div class="result-title">🌍 التحليل التقديري لخريطة أصولك</div>
-        
-        <div id="resultsContainer"></div>
-    </div>
-</div>
-
-<script>
-// دالة عرض معانية الصورة عند اختيارها
-function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        const preview = document.getElementById('imagePreview');
-        const prompt = document.getElementById('uploadPrompt');
-        preview.src = reader.result;
-        preview.style.display = 'block';
-        prompt.style.display = 'none';
-    }
-    if(event.target.files[0]) {
-        reader.readAsDataURL(event.target.files[0]);
-        document.getElementById('statusText').innerHTML = "";
-        document.getElementById('resultBox').style.display = 'none';
-    }
-}
-
-// دالة بدء المحاكاة التفاعلية الفاخرة
-function startAnalysis() {
-    const input = document.getElementById('imageInput');
-    const status = document.getElementById('statusText');
-    const scanner = document.getElementById('scannerLine');
-    const resultBox = document.getElementById('resultBox');
-    const container = document.getElementById('resultsContainer');
-    const btn = document.getElementById('analyzeBtn');
-
-    if (input.files.length === 0) {
-        status.style.color = "red";
-        status.innerHTML = "الرجاء رفع صورتك أولاً لكي نتمكن من تحليلها!";
-        return;
-    }
-
-    status.style.color = "#1e3c72";
-    status.innerHTML = "جاري تتبع الهيكل المورفولوجي وعظام الوجه...";
-    scanner.style.display = 'block'; // تشغيل خط الرادار المتحرك
-    resultBox.style.display = 'none';
-    btn.disabled = true; // تعطيل الزر مؤقتاً أثناء الفحص
-
-    // قائمة سيناريوهات عشوائية لتنوع النتائج في كل مرة تجربة
-    const scenarios = [
-        [
-            { name: "شمال وشرق أفريقيا", pct: 72 },
-            { name: "الشرق الأوسط والجزيرة العربية", pct: 18 },
-            { name: "أصول عرقية أخرى ممتدة", pct: 10 }
-        ],
-        [
-            { name: "حوض البحر الأبيض المتوسط", pct: 55 },
-            { name: "أفريقيا جنوب الصحراء الكبرى", pct: 30 },
-            { name: "جنوب وشرق آسيا", pct: 15 }
-        ],
-        [
-            { name: "الشرق الأوسط والجزيرة العربية", pct: 60 },
-            { name: "شمال أفريقيا (الأمازيغ)", pct: 25 },
-            { name: "جنوب أوروبا", pct: 15 }
-        ]
-    ];
-
-    // اختيار سيناريو عشوائي
-    const chosenScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
-
-    // تغيير نصوص الحالة تدريجياً لتعزيز شعور التفاعل والذكاء الاصطناعي
-    setTimeout(() => { status.innerHTML = "جاري مقارنة التوزيع الجغرافي بالقاعدة الجينية العالمية..."; }, 1500);
-    setTimeout(() => { status.innerHTML = "توليد النسب والخرائط النهائية الكروموسومية..."; }, 3200);
-
-    // إظهار النتيجة النهائية بعد 4.5 ثوانٍ
-    setTimeout(() => {
-        scanner.style.display = 'none'; // إيقاف الرادار
-        status.innerHTML = "✨ اكتمل التحليل بنجاح!";
-        btn.disabled = false;
-        
-        // بناء أشرطة النسب ديناميكياً داخل الصندوق
-        container.innerHTML = "";
-        chosenScenario.forEach(item => {
-            container.innerHTML += `
-                <div class="origin-text">
-                    <span>${item.name}</span>
-                    <span>${item.pct}%</span>
-                </div>
-                <div class="percentage-bar">
-                    <div class="progress" data-width="${item.pct}%"></div>
-                </div>
-            `;
-        });
-
-        resultBox.style.display = 'block';
-
-        // جعل الأشرطة تتحرك وتتمدد بشكل تجميلي جذاب بعد فتح الصندوق مباشرة
-        setTimeout(() => {
-            const progresses = document.querySelectorAll('.progress');
-            progresses.forEach(p => {
-                p.style.width = p.getAttribute('data-width');
-            });
-        }, 100);
-
-    }, 4500);
-}
-</script>
-
+    <!-- ربط ملف البرمجة -->
+    <script src="script.js"></script>
 </body>
 </html>
